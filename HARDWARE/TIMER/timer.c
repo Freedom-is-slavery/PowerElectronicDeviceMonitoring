@@ -17,6 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////////// 	 
 
 extern u32 lwip_localtime;
+extern vu16 AD_Value[ADC_ChannelNumber];
 
 TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 NVIC_InitTypeDef NVIC_InitStructure;
@@ -36,7 +37,7 @@ void TIM2_Int_Init(u16 arr, u16 psc)
 	
 	//对定时器2的NVIC配置
 		NVIC_InitStructure.NVIC_IRQChannel=TIM2_IRQn; 					//定时器2中断
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02; 		//抢占优先级1
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02; 		//抢占优先级2,低于TIM3优先级
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x03; 			//子优先级3
 		NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
@@ -78,7 +79,7 @@ void TIM2_IRQHandler(void)
 {
 	if(TIM_GetITStatus(TIM2,TIM_IT_Update) == SET) //溢出中断
 	{
-
+		Start_ADC_Conversion();
 	}
 }
 

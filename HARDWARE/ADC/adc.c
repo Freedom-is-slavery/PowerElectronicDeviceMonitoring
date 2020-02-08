@@ -1,10 +1,6 @@
 #include "adc.h"
 #include "delay.h"
 
-#include "stm32f4xx_gpio.h"
-#include "stm32f4xx_adc.h"
-#include "stm32f4xx_dma.h"
-
 //*************************************
 //
 // 实现三相电压电流的实时采样和转换
@@ -110,6 +106,7 @@ void DMA2_Init(void)
 	DMA_Cmd(DMA2_Stream0, ENABLE);	//使能DMA2数据流0,启动传输
 }
 
+//开启ADC转换并等待转换完成
 void Start_ADC_Conversion(void)
 {
 	ADC_SoftwareStartConv(ADC1); //开启转换

@@ -8,29 +8,17 @@
 #include "stdio.h"
 #include "string.h" 
 //////////////////////////////////////////////////////////////////////////////////	 
-//本程序只供学习使用，未经作者许可，不得用于其它任何用途
-//ALIENTEK STM32F407开发板
-//UDP 测试代码	   
-//正点原子@ALIENTEK
-//技术论坛:www.openedv.com
-//创建日期:2014/8/15
-//版本：V1.0
-//版权所有，盗版必究。
-//Copyright(C) 广州市星翼电子科技有限公司 2009-2019
-//All rights reserved									  
-//*******************************************************************************
-//修改信息:
-//2019.12.22 Zhejiang University 计算机网络与通信课程项目,用于实现UDP通信
-//2020.2.6 Zhejiang University SRTP科研训练项目,用于实现UDP通信
+//	UDP方式传输数据
 ////////////////////////////////////////////////////////////////////////////////// 	   
  
 //UDP接收数据缓冲区
 u8 udp_demo_recvbuf[UDP_DEMO_RX_BUFSIZE];
-
 //UDP发送数据缓冲区
 u8 udp_demo_sendbuf[UDP_DEMO_TX_BUFSIZE];
-//UDP数据帧和应答帧相关定义
+
 u8 FileBuff[100]__attribute__((at(0x68040000)));
+
+struct udp_pcb *udppcb;  	//UDP协议控制块(全局变量)
 
 //UDP 测试全局状态标记变量
 //bit7:没有用到
@@ -71,7 +59,6 @@ void udp_demo_set_remoteip(void)
 void udp_demo_test(void)
 {
  	err_t err;
-	struct udp_pcb *udppcb;  	//定义一个UDP协议控制块
 	struct ip_addr rmtipaddr;  	//远端ip地址
  	
 	u8 *tbuf;					//LCD显示缓存指针

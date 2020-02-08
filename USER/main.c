@@ -22,16 +22,12 @@
 #include "tcp_server_demo.h"
 #include "udp_demo.h"
 
-//ALIENTEK 探索者STM32F407开发板 实验55
-//LWIP网络通信综合实验-库函数版本
-//技术支持：www.openedv.com
-//淘宝店铺：http://eboard.taobao.com  
-//广州市星翼电子科技有限公司  
-//作者：正点原子 @ALIENTEK
+////////////////////////////////////////////////////////////////////////////////
+//	PROJECT: 基于Ethernet通信的电力电子设备状态的实时监测系统设计
+//	CONTRIBUTORS: WWZ, ZGCL, WY
+//	BRIEF INTRODUCTION: 该部分程序实现STM32上的AD转换和用LWIP协议实现Ethernet通信
+///////////////////////////////////////////////////////////////////////////////
 
-/*ALIENTEK为LWIP学习专门编写手册《ALIENTEK STM32F4 LWIP使用教程.pdf》，详细说明请参考手册。*/
-
-extern void Adc_Temperate_Init(void);	//声明内部温度传感器初始化函数
 
 //加载UI
 //mode:
@@ -116,15 +112,8 @@ int main(void)
 		key=KEY_Scan(0);
 		switch(key)
 		{
-			// case KEY0_PRES://TCP Server模式
-			// tcp_server_test();
-			// lwip_test_ui(3);//重新加载UI
-			// break;
-			// case KEY1_PRES://TCP Client模式
-			// tcp_client_test();
-			// lwip_test_ui(3);//重新加载UI
-			// break; 
-			
+			//暂时先测试用UDP进行传输
+
 			case KEY2_PRES://UDP模式
 				udp_demo_test();
 				//lwip_test_ui(3);//重新加载UI
