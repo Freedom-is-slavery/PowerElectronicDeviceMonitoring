@@ -80,6 +80,13 @@ IP层的基本配置位于 lwip_comm.c 中:
 
 - MALLOC: 内存管理
 
+## TODO LIST
+
+- TIM2定时修改
+- ADC_DMA启动方式完善
+- ADC采样周期调试和修改
+- ......
+
 ## 其他
 
 [我的GitHub主页](https://github.com/Freedom-is-slavery)
