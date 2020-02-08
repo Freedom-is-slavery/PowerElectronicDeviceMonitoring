@@ -11,13 +11,6 @@
 // 
 //*************************************
 
-#define AD_Value[0] PhaseA_Voltage
-#define AD_Value[1] PhaseB_Voltage
-#define AD_Value[2] PhaseC_Voltage
-#define AD_Value[3] PhaseA_Current
-#define AD_Value[4] PhaseB_Current
-#define AD_Value[5] PhaseC_Current
-
 vu16 AD_Value[ADC_ChannelNumber];	//通过DMA方式存储的一组AD转换结果
 
 //初始化ADC
@@ -117,11 +110,14 @@ void DMA2_Init(void)
 	DMA_Cmd(DMA2_Stream0, ENABLE);	//使能DMA2数据流0,启动传输
 }
 
-
-
+void Start_ADC_Conversion(void)
+{
 	ADC_SoftwareStartConv(ADC1); //开启转换
-	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);//等待转换完成
-	return ADC_GetConversionValue(ADC1);//返回转换结果
+	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);//等待转换完成	
+	
+	//return ADC_GetConversionValue(ADC1);//返回转换结果,读取的是DR寄存器值
+}
+	
  
 
 
