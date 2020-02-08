@@ -18,7 +18,7 @@ u8 udp_demo_sendbuf[UDP_DEMO_TX_BUFSIZE];
 
 u8 FileBuff[100]__attribute__((at(0x68040000)));
 
-struct udp_pcb *udppcb;  	//UDP协议控制块(全局变量)
+struct udp_pcb *udppcb;  	//UDP协议控制块
 
 //UDP 测试全局状态标记变量
 //bit7:没有用到
@@ -165,17 +165,30 @@ void udp_demo_recv(void *arg,struct udp_pcb *upcb,struct pbuf *p,struct ip_addr 
 	} 
 } 
 //UDP服务器发送数据,该函数用于发送六路ADC转换值(三相电压电流)
-void udp_demo_senddata(struct udp_pcb *upcb)
+void udp_demo_senddata(void)
 {
 	struct pbuf *ptr;
 	ptr=pbuf_alloc(PBUF_TRANSPORT, UDP_DEMO_TX_BUFSIZE, PBUF_POOL); //申请内存
 	if(ptr)
 	{
 		ptr->payload=(void*)udp_demo_sendbuf; 	//发送的数据在这里
-		udp_send(upcb,ptr);	//udp发送数据 
+		udp_send(udppcb,ptr);	//udp发送数据 
 		pbuf_free(ptr);//释放内存
 	} 
 } 
+
+void udp_demo_send_ADCValue(vu16 *value)
+{
+	u8 mark;
+	for (mark = 0; mark < UDP_DEMO_TX_BUFSIZE/2; mark++)
+	{
+		//高字节在前,低字节在后
+		udp_demo_sendbuf[2* mark] = (u8)(value[mark] >> 8);
+		udp_demo_sendbuf[2* mark + 1] = (u8)value[mark];
+	}
+
+	udp_demo_senddata();
+}
 //关闭UDP连接
 void udp_demo_connection_close(struct udp_pcb *upcb)
 {

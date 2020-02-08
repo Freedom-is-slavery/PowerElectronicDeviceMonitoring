@@ -2,6 +2,7 @@
 #include "led.h"
 #include "lwip_comm.h"
 #include "adc.h"
+#include "udp_demo.h"
 
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -80,6 +81,7 @@ void TIM2_IRQHandler(void)
 	if(TIM_GetITStatus(TIM2,TIM_IT_Update) == SET) //溢出中断
 	{
 		Start_ADC_Conversion();
+		udp_demo_send_ADCValue(AD_Value);
 	}
 }
 
