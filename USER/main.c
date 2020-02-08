@@ -76,7 +76,7 @@ int main(void)
 	FSMC_SRAM_Init();		//初始化外部SRAM  
 	BEEP_Init();			//蜂鸣器初始化
 	My_RTC_Init();  		//RTC初始化
-	ADC_Init();  			//ADC初始化 
+	Adc_Init();  			//ADC初始化 
 	TIM2_Int_Init(99,839);	//定时1ms
 	TIM3_Int_Init(999,839); //100khz的频率,计数1000为10ms
 	
@@ -125,7 +125,7 @@ int main(void)
 		t++;
 		if(t==100)
 		{
-			LCD_ShowString(30,230,200,16,16,"KEY2 is used for UDP test");
+			LCD_ShowString(30,230,200,16,16,"Press KEY2 to start ADC and UDP");
 		}
 
 		if(t==200)

@@ -106,7 +106,7 @@ void DMA2_Init(void)
 	DMA_Cmd(DMA2_Stream0, ENABLE);	//使能DMA2数据流0,启动传输
 }
 
-//开启ADC转换并等待转换完成
+//开启ADC转换和DMA传输并等待转换完成
 void Start_ADC_Conversion(void)
 {
 	ADC_SoftwareStartConv(ADC1); //开启转换
