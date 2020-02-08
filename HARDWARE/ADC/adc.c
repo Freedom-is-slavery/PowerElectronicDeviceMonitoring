@@ -1,6 +1,7 @@
 #include "adc.h"
 #include "delay.h"
 
+#include "stm32f4xx_dma.h"
 //*************************************
 //
 // 实现三相电压电流的实时采样和转换
@@ -54,11 +55,11 @@ void Adc_Init(void)
 		ADC_InitStructure.ADC_NbrOfConversion = ADC_ChannelNumber; //6个转换在规则序列中
 		ADC_Init(ADC1,&ADC_InitStructure); 
 	//ADC_DMA使能
-		ADC_DMARequestAfterLastTransferCmd(ADC1,ENABLE);	//源数据变化时开启DMA传输
+		ADC_DMARequestAfterLastTransferCmd(ADC1,DISABLE);	
 		ADC_DMACmd(ADC1,ENABLE);
 	//规则通道组设置
 	//每个通道采样时间暂定为15个周期,ADCCLK频率21M
-	//采样时间视实际测试结果适当加长,以提高精确度
+	//采样时间过短可能会影响转换精确度和DMA传输
 		ADC_RegularChannelConfig(ADC1,ADC_Channel_4,1,ADC_SampleTime_15Cycles); 	
 		ADC_RegularChannelConfig(ADC1,ADC_Channel_5,2,ADC_SampleTime_15Cycles);
 		ADC_RegularChannelConfig(ADC1,ADC_Channel_6,3,ADC_SampleTime_15Cycles);
@@ -95,7 +96,7 @@ void DMA2_Init(void)
 		DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable; //内存地址寄存器递增
 		DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord; //数据宽度为16位
 		DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord; //数据宽度为16位
-		DMA_InitStructure.DMA_Mode = DMA_Mode_Circular; //工作在循环缓存模式
+		DMA_InitStructure.DMA_Mode = DMA_Mode_Circular; //!!可能需要修改!! 工作在循环缓存模式
 		DMA_InitStructure.DMA_Priority = DMA_Priority_High; //DMA通道1拥有高优先级
 		DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable; //DMA通道1没有设置为内存到内存传输
 		DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull	//FIFO阈值
@@ -106,12 +107,17 @@ void DMA2_Init(void)
 	DMA_Cmd(DMA2_Stream0, ENABLE);	//使能DMA2数据流0,启动传输
 }
 
-//开启ADC转换和DMA传输并等待转换完成
+//开启ADC转换和DMA传输,等待转换完成和DMA传输完成
+//存在的问题: ADC规则通道一组序列转换完成后,
+//1. DMA传输开始的时间? A: 在每一个通道完成转换后,就启动一次传输
+//2. 新一轮AD转换开始后, DMA传输目标内存单元的基地址是否重置? A:尚不明确
+//3. 如何开始新一轮的转换和传输?
 void Start_ADC_Conversion(void)
 {
-	ADC_SoftwareStartConv(ADC1); //开启转换
-	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);//等待转换完成	
-	
+	ADC_DMARequestAfterLastTransferCmd(ADC1,ENABLE);
+	ADC_SoftwareStartConv(ADC1); //开启转换,此处置位的是ADC1_CR2的SWSTART位
+	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);	//等待转换完成	
+	while(DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0);	//!!可能需要修改!! 等待DMA传输完成
 	//return ADC_GetConversionValue(ADC1);//返回转换结果,读取的是DR寄存器值
 }
 	
