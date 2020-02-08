@@ -10,7 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////// 	   
  
 #define UDP_DEMO_RX_BUFSIZE		100     //定义udp最大接收数据长度
-#define UDP_DEMO_TX_BUFSIZE     100     //定义udp发送数据长度 
+#define UDP_DEMO_TX_BUFSIZE     6       //定义udp发送数据长度(此处适配AD转换通道数的需要) 
 #define UDP_DEMO_PORT			8089	//定义udp连接的端口 
 
  

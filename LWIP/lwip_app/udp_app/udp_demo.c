@@ -164,11 +164,11 @@ void udp_demo_recv(void *arg,struct udp_pcb *upcb,struct pbuf *p,struct ip_addr 
 		udp_disconnect(upcb); 
 	} 
 } 
-//UDP服务器发送数据,该函数用于发送应答帧
+//UDP服务器发送数据,该函数用于发送六路ADC转换值(三相电压电流)
 void udp_demo_senddata(struct udp_pcb *upcb)
 {
 	struct pbuf *ptr;
-	ptr=pbuf_alloc(PBUF_TRANSPORT, 9, PBUF_POOL); //申请内存
+	ptr=pbuf_alloc(PBUF_TRANSPORT, UDP_DEMO_TX_BUFSIZE, PBUF_POOL); //申请内存
 	if(ptr)
 	{
 		ptr->payload=(void*)udp_demo_sendbuf; 	//发送的数据在这里
