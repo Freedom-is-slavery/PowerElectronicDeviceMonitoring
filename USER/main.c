@@ -17,9 +17,8 @@
 #include "lwip/netif.h"
 #include "lwip_comm.h"
 #include "lwipopts.h"
-#include "tcp_client_demo.h"
-#include "tcp_client_demo.h"
-#include "tcp_server_demo.h"
+//#include "tcp_client_demo.h"
+//#include "tcp_server_demo.h"
 #include "udp_demo.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +104,7 @@ int main(void)
 		lwip_periodic_handle();
 	}
 	lwip_test_ui(2);//加载后半部分UI 
-	httpd_init();	//HTTP初始化(默认开启websever)
+	//httpd_init();	//HTTP初始化(默认开启websever)
 	
 	while(1)
 	{

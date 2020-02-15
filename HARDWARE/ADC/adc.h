@@ -19,12 +19,12 @@
 #define ADC_SamplingTimes 10        //每轮采样10次
 
 //AD采样值
-#define AD_Value[0] PhaseA_Voltage
-#define AD_Value[1] PhaseB_Voltage
-#define AD_Value[2] PhaseC_Voltage
-#define AD_Value[3] PhaseA_Current
-#define AD_Value[4] PhaseB_Current
-#define AD_Value[5] PhaseC_Current
+// #define ADValue[0] PhaseA_Voltage
+// #define ADValue[1] PhaseB_Voltage
+// #define ADValue[2] PhaseC_Voltage
+// #define ADValue[3] PhaseA_Current
+// #define ADValue[4] PhaseB_Current
+// #define ADValue[5] PhaseC_Current
 
 void Adc_Init(void); 	//ADC通道初始化
 void DMA2_Init(void);   //DMA2初始化

@@ -1,14 +1,13 @@
 #include "adc.h"
 #include "delay.h"
 
-#include "stm32f4xx_dma.h"
 //*************************************
 //
 // 实现三相电压电流的实时采样和转换
 // 
 //*************************************
 
-vu16 AD_Value[ADC_ChannelNumber];	//通过DMA方式存储的一组AD转换结果
+vu16 ADValue[ADC_ChannelNumber];	//通过DMA方式存储的一组AD转换结果
 
 //初始化ADC
 //使用6个规则通道,循环扫描模式
@@ -69,10 +68,10 @@ void Adc_Init(void)
 	//使能ADC1
 		ADC_Cmd(ADC1,ENABLE);
 	//校准与复位ADC1
-		ADC_ResetCalibration(ADC1); 					//复位指定的ADC1的校准寄存器
- 		while(ADC_GetResetCalibrationStatus(ADC1)); 	//获取ADC1复位校准寄存器的状态,设置状态则等待
- 		ADC_StartCalibration(ADC1); 					//开始指定ADC1的校准状态
- 		while(ADC_GetCalibrationStatus(ADC1)); 			//获取指定ADC1的校准程序,设置状态则等待
+		//ADC_ResetCalibration(ADC1); 					//复位指定的ADC1的校准寄存器
+ 		//while(ADC_GetResetCalibrationStatus(ADC1)); 	//获取ADC1复位校准寄存器的状态,设置状态则等待
+ 		//ADC_StartCalibration(ADC1); 					//开始指定ADC1的校准状态
+ 		//while(ADC_GetCalibrationStatus(ADC1)); 			//获取指定ADC1的校准程序,设置状态则等待
 	
 }
 
@@ -84,12 +83,12 @@ void DMA2_Init(void)
 	while(DMA_GetCmdStatus(DMA2_Stream0) != DISABLE);
 
 	DMA_Cmd(DMA2_Stream0, DISABLE);
-	DMA_DeInit(DMA_Channel_0);	//将DMA的通道1所有配置重设为缺省值
+	DMA_DeInit(DMA2_Stream0);	//将DMA的通道1所有配置重设为缺省值
 	
 	//DMA控制初始化结构体配置	
 		DMA_InitStructure.DMA_Channel = DMA_Channel_0;	//ADC1专用的通道0
 		DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)&ADC1->DR;	//DMA外设ADC数据寄存器ADC_DR地址
-		DMA_InitStructure.DMA_Memory0BaseAddr = (u32)&AD_Value;	//DMA内存基地址
+		DMA_InitStructure.DMA_Memory0BaseAddr = (u32)ADValue;	//DMA内存基地址
 		DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;	//传输方向从外设到内存
 		DMA_InitStructure.DMA_BufferSize = ADC_ChannelNumber;	//DMA缓存大小
 		DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;	//外设ADC数据寄存器地址不变
@@ -99,7 +98,7 @@ void DMA2_Init(void)
 		DMA_InitStructure.DMA_Mode = DMA_Mode_Circular; //!!可能需要修改!! 工作在循环缓存模式
 		DMA_InitStructure.DMA_Priority = DMA_Priority_High; //DMA通道1拥有高优先级
 		DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable; //DMA通道1没有设置为内存到内存传输
-		DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull	//FIFO阈值
+		DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;	//FIFO阈值
 		DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;	//单次传输
 		DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;	//单次传输
 		DMA_Init(DMA2_Stream0, &DMA_InitStructure); //根据DMA_InitStruct中指定的参数初始化DMA的通道
@@ -117,7 +116,7 @@ void Start_ADC_Conversion(void)
 	ADC_DMARequestAfterLastTransferCmd(ADC1,ENABLE);
 	ADC_SoftwareStartConv(ADC1); //开启转换,此处置位的是ADC1_CR2的SWSTART位
 	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);	//等待转换完成	
-	while(DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0);	//!!可能需要修改!! 等待DMA传输完成
+	while(DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0) != RESET);	//!!可能需要修改!! 等待DMA传输完成
 	//return ADC_GetConversionValue(ADC1);//返回转换结果,读取的是DR寄存器值
 }
 	

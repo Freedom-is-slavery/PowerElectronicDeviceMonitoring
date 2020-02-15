@@ -18,13 +18,14 @@
 ////////////////////////////////////////////////////////////////////////////////// 	 
 
 extern u32 lwip_localtime;
-extern vu16 AD_Value[ADC_ChannelNumber];
+extern vu16 ADValue[ADC_ChannelNumber];
 
 TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
-NVIC_InitTypeDef NVIC_InitStructure;
 
 void TIM2_Int_Init(u16 arr, u16 psc)
 {
+	NVIC_InitTypeDef NVIC_InitStructure;
+
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);  			//使能TIM2时钟
 	
 	TIM_TimeBaseInitStructure.TIM_Prescaler=psc;  					//定时器分频
@@ -52,6 +53,7 @@ void TIM2_Int_Init(u16 arr, u16 psc)
 //这里使用的是定时器3!
 void TIM3_Int_Init(u16 arr, u16 psc)
 {
+	NVIC_InitTypeDef NVIC_InitStructure;
 
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);  			//使能TIM3时钟
 	
@@ -81,7 +83,7 @@ void TIM2_IRQHandler(void)
 	if(TIM_GetITStatus(TIM2,TIM_IT_Update) == SET) //溢出中断
 	{
 		Start_ADC_Conversion();
-		udp_demo_send_ADCValue(AD_Value);
+		udp_demo_send_ADCValue(ADValue);
 	}
 }
 
