@@ -6,22 +6,7 @@
 #include "lcd.h"
 #include "malloc.h"
 #include "stdio.h"
-#include "string.h" 
-//////////////////////////////////////////////////////////////////////////////////	 
-//本程序只供学习使用，未经作者许可，不得用于其它任何用途
-//ALIENTEK STM32F407开发板
-//TCP Client 测试代码	   
-//正点原子@ALIENTEK
-//技术论坛:www.openedv.com
-//创建日期:2014/8/15
-//版本：V1.0
-//版权所有，盗版必究。
-//Copyright(C) 广州市星翼电子科技有限公司 2009-2019
-//All rights reserved									  
-//*******************************************************************************
-//修改信息
-//无
-////////////////////////////////////////////////////////////////////////////////// 	   
+#include "string.h" 	   
  
 //TCP Client接收数据缓冲区
 u8 tcp_client_recvbuf[TCP_CLIENT_RX_BUFSIZE];	
@@ -252,6 +237,7 @@ err_t tcp_client_poll(void *arg, struct tcp_pcb *tpcb)
 	{
 		if(tcp_client_flag&(1<<7))	//判断是否有数据要发送 
 		{
+			//这里发送TCP数据,地址池大小可修改为固定值(三相电压电流共6个u16数据,地址池大小为12)
 			es->p=pbuf_alloc(PBUF_TRANSPORT, strlen((char*)tcp_client_sendbuf),PBUF_POOL);	//申请内存 
 			pbuf_take(es->p,(char*)tcp_client_sendbuf,strlen((char*)tcp_client_sendbuf));	//将tcp_client_sentbuf[]中的数据拷贝到es->p_tx中
 			tcp_client_senddata(tpcb,es);//将tcp_client_sentbuf[]里面复制给pbuf的数据发送出去

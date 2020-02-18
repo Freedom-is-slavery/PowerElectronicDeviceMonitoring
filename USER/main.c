@@ -103,8 +103,7 @@ int main(void)
 	{
 		lwip_periodic_handle();
 	}
-	lwip_test_ui(2);//加载后半部分UI 
-	//httpd_init();	//HTTP初始化(默认开启websever)
+	lwip_test_ui(2);//加载后半部分UI
 	
 	while(1)
 	{
