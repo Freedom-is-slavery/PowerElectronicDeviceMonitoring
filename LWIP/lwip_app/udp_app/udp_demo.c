@@ -11,12 +11,10 @@
 //	UDP方式传输数据
 ////////////////////////////////////////////////////////////////////////////////// 	   
  
-//UDP接收数据缓冲区
-u8 udp_demo_recvbuf[UDP_DEMO_RX_BUFSIZE];
-//UDP发送数据缓冲区
-u8 udp_demo_sendbuf[UDP_DEMO_TX_BUFSIZE];
 
-u8 FileBuff[100]__attribute__((at(0x68040000)));
+u8 udp_demo_recvbuf[UDP_DEMO_RX_BUFSIZE];	//UDP接收数据缓冲区
+u8 udp_demo_sendbuf[UDP_DEMO_TX_BUFSIZE];	//UDP发送数据缓冲区
+extern u8 TestStatus;
 
 struct udp_pcb *udppcb;  	//UDP协议控制块
 
@@ -98,7 +96,8 @@ void udp_demo_test(void)
 			err=udp_bind(udppcb,IP_ADDR_ANY,UDP_DEMO_PORT);//绑定本地IP地址与端口号
 			if(err==ERR_OK)	//绑定完成
 			{
-				udp_recv(udppcb,udp_demo_recv,NULL);//注册接收回调函数 
+				udp_recv(udppcb,udp_demo_recv,NULL);//注册接收回调函数
+				TestStatus = STATUS_IS_UDP;
 				LCD_ShowString(30,190,210,16,16,"STATUS:Connected   ");//标记连接上了(UDP是非可靠连接,这里仅仅表示本地UDP已经准备好)
 				POINT_COLOR=RED;
 				LCD_ShowString(30,210,lcddev.width-30,lcddev.height-190,16,"Receive Data:");//提示消息		
@@ -133,7 +132,7 @@ void udp_demo_test(void)
 } 
 
 
-//UDP服务器回调函数
+//UDP服务器接收回调函数
 void udp_demo_recv(void *arg,struct udp_pcb *upcb,struct pbuf *p,struct ip_addr *addr,u16_t port)
 {
 	u32 data_len = 0;
@@ -164,7 +163,7 @@ void udp_demo_recv(void *arg,struct udp_pcb *upcb,struct pbuf *p,struct ip_addr 
 		udp_disconnect(upcb); 
 	} 
 } 
-//UDP服务器发送数据,该函数用于发送六路ADC转换值(三相电压电流)
+//UDP服务器发送数据
 void udp_demo_senddata(void)
 {
 	struct pbuf *ptr;
@@ -176,7 +175,7 @@ void udp_demo_senddata(void)
 		pbuf_free(ptr);//释放内存
 	} 
 } 
-
+//用于发送六路ADC转换值(三相电压电流)
 void udp_demo_send_ADCValue(vu16 *value)
 {
 	u8 mark;

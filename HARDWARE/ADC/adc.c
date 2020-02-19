@@ -22,7 +22,7 @@ void Adc_Init(void)
 	ADC_InitTypeDef ADC_InitStructure;
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	GPIO_InitTypeDef GPIO_InitStructure;
-	
+
 	//时钟初始化
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1,ENABLE);  //使能ADC1时钟
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE); //使能GPIOA时钟
@@ -71,7 +71,7 @@ void Adc_Init(void)
 		//ADC_ResetCalibration(ADC1); 					//复位指定的ADC1的校准寄存器
  		//while(ADC_GetResetCalibrationStatus(ADC1)); 	//获取ADC1复位校准寄存器的状态,设置状态则等待
  		//ADC_StartCalibration(ADC1); 					//开始指定ADC1的校准状态
- 		//while(ADC_GetCalibrationStatus(ADC1)); 			//获取指定ADC1的校准程序,设置状态则等待
+ 		//while(ADC_GetCalibrationStatus(ADC1)); 		//获取指定ADC1的校准程序,设置状态则等待
 	
 }
 

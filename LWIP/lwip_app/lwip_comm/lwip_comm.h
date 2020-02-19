@@ -2,7 +2,11 @@
 #define _LWIP_COMM_H 
 #include "lan8720.h" 
 
-#define LWIP_MAX_DHCP_TRIES		4   //DHCP服务器最大重试次数
+#define STATUS_NOT_ALREADY 		0		//定义协议栈未做好准备时的状态
+#define STATUS_IS_UDP           1		//定义状态:UDP模式通信且发送准备就绪
+#define STATUS_IS_TCP_CLIENT 	2		//定义状态:TCP_Client模式通信且发送准备就绪
+
+#define LWIP_MAX_DHCP_TRIES		4   	//DHCP服务器最大重试次数
    
 //lwip控制结构体
 typedef struct  

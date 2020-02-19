@@ -23,7 +23,8 @@
 //无
 ////////////////////////////////////////////////////////////////////////////////// 	   
  
-#define TCP_CLIENT_RX_BUFSIZE	200		//定义tcp client最大接收数据长度
+#define TCP_CLIENT_RX_BUFSIZE	100		//定义tcp client最大接收数据长度
+#define TCP_CLIENT_TX_BUFSIZE   12		//三相电压电流6个值,12个u8
 #define	TCP_CLIENT_PORT			8087	//定义tcp client要连接的远端端口
 
 //tcp服务器连接状态
@@ -50,6 +51,8 @@ err_t tcp_client_poll(void *arg, struct tcp_pcb *tpcb);
 err_t tcp_client_sent(void *arg, struct tcp_pcb *tpcb, u16_t len);
 void tcp_client_senddata(struct tcp_pcb *tpcb, struct tcp_client_struct * es);
 void tcp_client_connection_close(struct tcp_pcb *tpcb, struct tcp_client_struct * es );
+
+void TCP_Client_send_ADCValue(vu16 *value);
 
 #endif
 

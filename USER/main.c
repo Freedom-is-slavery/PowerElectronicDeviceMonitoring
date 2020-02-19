@@ -17,7 +17,7 @@
 #include "lwip/netif.h"
 #include "lwip_comm.h"
 #include "lwipopts.h"
-//#include "tcp_client_demo.h"
+#include "tcp_client_demo.h"
 //#include "tcp_server_demo.h"
 #include "udp_demo.h"
 
@@ -26,6 +26,13 @@
 //	CONTRIBUTORS: WWZ, ZGCL, WY
 //	BRIEF INTRODUCTION: 该部分程序实现STM32上的AD转换和用LWIP协议实现Ethernet通信
 ///////////////////////////////////////////////////////////////////////////////
+
+
+//标记当前使用的传输协议状态,并且可以指示该协议的准备是否就绪
+//STATUS_NOT_ALREADY: 未选用传输方式或通信未准备就绪
+//STATUS_IS_UDP: 启用UDP传输,且发送准备已就绪
+//STATUS_IS_TCP_CLIENT: 启用TCP客户端传输,且发送准备已就绪(已完成握手建立TCP连接) 
+u8 TestStatus = STATUS_NOT_ALREADY;
 
 
 //加载UI
@@ -39,11 +46,9 @@ void lwip_test_ui(u8 mode)
 	POINT_COLOR=RED;
 	if(mode&1<<0)
 	{
-		LCD_Fill(30,30,lcddev.width,110,WHITE);	//清除显示
+		LCD_Fill(30,30,lcddev.width,110,WHITE);				//清除显示
 		LCD_ShowString(30,30,200,16,16,"Explorer STM32F4");
-		LCD_ShowString(30,50,200,16,16,"Ethernet lwIP Test");
-		LCD_ShowString(30,70,200,16,16,"ATOM@ALIENTEK");
-		LCD_ShowString(30,90,200,16,16,"2014/8/15"); 	
+		LCD_ShowString(30,50,200,16,16,"Remote Monitoring Test"); 	
 	}
 	if(mode&1<<1)
 	{
@@ -52,7 +57,7 @@ void lwip_test_ui(u8 mode)
 		if(lwipdev.dhcpstatus==2)sprintf((char*)buf,"DHCP IP:%d.%d.%d.%d",lwipdev.ip[0],lwipdev.ip[1],lwipdev.ip[2],lwipdev.ip[3]);//打印动态IP地址
 		else sprintf((char*)buf,"Static IP:%d.%d.%d.%d",lwipdev.ip[0],lwipdev.ip[1],lwipdev.ip[2],lwipdev.ip[3]);//打印静态IP地址
 		LCD_ShowString(30,130,210,16,16,buf); 
-		speed=LAN8720_Get_Speed();//得到网速
+		speed=LAN8720_Get_Speed();		//得到网速
 		if(speed&1<<1)LCD_ShowString(30,150,200,16,16,"Ethernet Speed:100M");
 		else LCD_ShowString(30,150,200,16,16,"Ethernet Speed:10M");
 		LCD_ShowString(30,170,200,16,16,"KEY0:TCP Server Test");
@@ -75,8 +80,8 @@ int main(void)
 	FSMC_SRAM_Init();		//初始化外部SRAM  
 	BEEP_Init();			//蜂鸣器初始化
 	My_RTC_Init();  		//RTC初始化
-	Adc_Init();  			//ADC初始化 
-	TIM2_Int_Init(99,839);	//定时1ms
+	Adc_Init();  			//ADC初始化,其中包含ADC专用的DMA的初始化 
+	TIM2_Int_Init(99,839);	//定时1ms,1000hz的采样率应该够用吧(狗头)
 	TIM3_Int_Init(999,839); //100khz的频率,计数1000为10ms
 	
 	mymem_init(SRAMIN);		//初始化内部内存池
@@ -110,13 +115,16 @@ int main(void)
 		key=KEY_Scan(0);
 		switch(key)
 		{
-			//暂时先测试用UDP进行传输
-
-			case KEY2_PRES://UDP模式
+			case KEY1_PRES:			//TCP_Client模式
+				tcp_client_test();
+				lwip_test_ui(3);
+				break;
+			case KEY2_PRES:			//UDP模式
 				udp_demo_test();
-				//lwip_test_ui(3);//重新加载UI
+				lwip_test_ui(3);	//重新加载UI
 				break; 
 		}
+		TestStatus = 0;
 		lwip_periodic_handle();
 		delay_ms(2);
 
