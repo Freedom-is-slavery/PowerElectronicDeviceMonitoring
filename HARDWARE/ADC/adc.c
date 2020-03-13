@@ -113,11 +113,17 @@ void DMA2_Init(void)
 //3. 如何开始新一轮的转换和传输?
 void Start_ADC_Conversion(void)
 {
+	u8 i;
 	ADC_DMARequestAfterLastTransferCmd(ADC1,ENABLE);
 	ADC_SoftwareStartConv(ADC1); //开启转换,此处置位的是ADC1_CR2的SWSTART位
 	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);	//等待转换完成	
 	while(DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0) != RESET);	//!!可能需要修改!! 等待DMA传输完成
 	//return ADC_GetConversionValue(ADC1);//返回转换结果,读取的是DR寄存器值
+
+	for(i = 1; i <= ADC_ChannelNumber; i++)
+	{
+		ADValue[i] = ADValue[i] * 3.3 / 4096;	//电压值转换
+	} 
 }
 	
  
