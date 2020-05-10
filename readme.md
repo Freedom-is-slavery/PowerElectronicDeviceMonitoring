@@ -1,10 +1,26 @@
 # 基于以太网通信的电力电子设备的远程监控嵌入式系统的设计
 
-本项目是基于搭载有STM32F407ZGT6微处理器的开发板设计的电力电子设备的远程监测系统
+本项目是电力电子装置运行状态的远程监测系统，实现电路的三相电压电流采样、信号调理、AD转换、以太网通信及PC端可视化监测，该Repository实现基于STM32F407ZGT6核心板开发的AD转换、电压电流指标分析和以太网通信。
+
+> Zhejiang University SRTP(Student Research Training Program)
+
+> 浙江大学本科生科研实践项目
+
+> 指导：邓焰教授 Guided by: Professor Yan.Deng
+
+## 硬件平台
+
+![ ](.\Illustration\board.jpg)
+
+[Alientek STM32F407ZGT6开发板](http://www.alientek.com/productinfo/714608.html)
+
+- MCU: STM32F407ZGT6, 32位ARM-Cortex M4架构
 
 ## 系统框架
 
 ### 1 信号采样和调理电路
+
+原理图和PCB使用Altium Designer绘制
 
 ### 2 AD转换和Ethernet通信
 
@@ -42,11 +58,15 @@
 - DMA配置(用法见于**STM32F4xx中文参考手册11.8**)
 - 查询方式判断ADC转换是否完成
 
-### 2.2 LWIP框架下实现Ethernet通信
+### 2.2 LWIP协议栈实现Ethernet通信
+
+> UDP通信已经调试可实现，TCP通信未调试
+
+Notes:
 
 IP层的基本配置位于 lwip_comm.c 中:
 
-(已经默认开启DHCP服务，超时重试不成功后将使用默认配置)
+(已经开启DHCP服务，超时重试不成功后将使用默认配置)
 
 - 默认远端IP: 192.168.1.115 (可在udp_demo.c中定义的udp_demo_set_remoteip中修改)
 
@@ -62,19 +82,23 @@ IP层的基本配置位于 lwip_comm.c 中:
 
 ### 3 PC端监控界面设计
 
+使用LABVIEW 2018开发
+
 ## 工程文件的结构
 
-- CORE: CMSIS(Cortex MicroController Software Interface Standard)软件接口层
+- CORE: CMSIS(Cortex MicroController Software Interface Standard)软件接口层标准
   - 核内外设访问层(core_cm4.h)
   - 中间件访问层
   - 外设访问层
   - ...
 
-- FWLIB: Firmware Library,官方固件库
+- FWLIB: Firmware Library，STM32F4固件库，加入了[跟以太网相关的库文件](.\FWLIB\STM32F4x7_ETH_Driver)
 
-- HARDWARE: 硬件驱动和基本配置
+- HARDWARE: 硬件驱动和功能
 
-- LWIP: Lightweight IP协议栈 ([More](https://savannah.nongnu.org/projects/lwip/))
+- LWIP: Lightweight IP协议栈
+  
+  [源码](https://savannah.nongnu.org/projects/lwip/)
   - arch
   - lwip_app: 用户自定义应用
   - lwip-1.4.1
@@ -88,18 +112,24 @@ IP层的基本配置位于 lwip_comm.c 中:
 - ADC采样周期调试和修改
 - 功能裁剪,删除冗余
 - 加入TCP通信功能
+- 丢包测试
+- ( 考虑加入OS调度 )
 - ......
+
+## 初期实现效果：
+
+![ ](.\Illustration\example.jpg)
 
 ## 其他
 
-[我的GitHub主页](https://github.com/Freedom-is-slavery)
+### Reference
 
-参考资料：
+1. STM32F4xx Manual
 
-1. STM32F4技术手册
+2. Cortex M4 内核编程手册
 
-2. Alientek开发板相关手册
+3. Alientek开发板例程、资料等
 
-3. 计算机网络与通信体系
+4. 计算机网络与通信体系
 
-4. LWIP协议栈源代码
+5. LWIP协议栈源代码
