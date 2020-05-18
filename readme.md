@@ -10,7 +10,7 @@
 
 ## 硬件平台
 
-![ ](.\Illustration\board.jpg)
+![ ](Illustration/board.jpg)
 
 [Alientek STM32F407ZGT6开发板](http://www.alientek.com/productinfo/714608.html)
 
@@ -118,7 +118,7 @@ IP层的基本配置位于 lwip_comm.c 中:
 
 ## 初期实现效果：
 
-![ ](.\Illustration\example.jpg)
+![ ](Illustration/example.jpg)
 
 ## 其他
 
