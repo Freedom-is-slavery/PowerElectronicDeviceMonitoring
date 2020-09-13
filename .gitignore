@@ -1,0 +1,4 @@
+OBJ/*.*
+USER/*.*
+!/USER/*.c
+!/USER/*.h
