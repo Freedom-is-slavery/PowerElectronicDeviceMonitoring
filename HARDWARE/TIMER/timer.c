@@ -3,11 +3,14 @@
 #include "lwip_comm.h"
 #include "adc.h"
 #include "udp_demo.h"
-#include "tcp_client_demo.h"	 
+#include "tcp_client_demo.h"
 
 extern u32 lwip_localtime;
 extern vu16 ADValue[ADC_ChannelNumber];
+int16_t ADValueTest[ADC_ChannelNumber];
+int16_t SinValue[20] = {0, 96, 183, 252, 296, 311, 296, 252, 183, 96, 0, -96, -183, -252, -296, -311, -296, -252, -183, -96};
 extern u8 TestStatus;
+u16 cnt;
 
 TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 
@@ -16,7 +19,7 @@ void TIM2_Int_Init(u16 arr, u16 psc)
 	NVIC_InitTypeDef NVIC_InitStructure;
 
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);  			//使能TIM2时钟
-	//定时器2配置
+	//定时器4配置
 		TIM_TimeBaseInitStructure.TIM_Prescaler=psc;  					//定时器分频
 		TIM_TimeBaseInitStructure.TIM_CounterMode=TIM_CounterMode_Up; 	//向上计数模式
 		TIM_TimeBaseInitStructure.TIM_Period=arr;   					//自动重装载值
@@ -24,7 +27,7 @@ void TIM2_Int_Init(u16 arr, u16 psc)
 		TIM_TimeBaseInit(TIM2,&TIM_TimeBaseInitStructure);
 		TIM_ITConfig(TIM2,TIM_IT_Update,ENABLE); 						//允许定时器2更新中断
 		TIM_Cmd(TIM2,ENABLE); 											//使能定时器2
-	//对定时器2的NVIC配置
+	//对定时器4的NVIC配置
 		NVIC_InitStructure.NVIC_IRQChannel=TIM2_IRQn; 					//定时器2中断
 		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02; 		//抢占优先级2,低于TIM3优先级
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x03; 			//子优先级3
@@ -52,31 +55,32 @@ void TIM3_Int_Init(u16 arr, u16 psc)
 		TIM_Cmd(TIM3,ENABLE); 											//使能定时器3	
 	//对定时器3的NVIC配置
 		NVIC_InitStructure.NVIC_IRQChannel=TIM3_IRQn; 					//定时器3中断
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x01; 		//抢占优先级1
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x00; 		//抢占优先级1
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x03; 			//子优先级3
 		NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 }
 
-//定时器2中断服务函数
-//用于ADC定时转换和处理数据
+/**
+ * @brief 定时器2中断服务函数，用于ADC定时转换和处理数据
+ **/
 void TIM2_IRQHandler(void)
 {
 	if(TIM_GetITStatus(TIM2,TIM_IT_Update) == SET) //溢出中断
 	{
-		//判断是通过UDP还是TCP方式传输
-		if(TestStatus == STATUS_IS_UDP)		//UDP方式
+		ADValueTest[0] = SinValue[cnt];
+		ADValueTest[1] = SinValue[(cnt+7)%20];
+		ADValueTest[2] = SinValue[(cnt+14)%20];
+		ADValueTest[3] = SinValue[cnt];
+		ADValueTest[4] = SinValue[(cnt+7)%20];
+		ADValueTest[5] = SinValue[(cnt+14)%20];
+		udp_demo_send_ADCValue((int16_t *)ADValueTest);
+		if ((++cnt) == 20)
 		{
-			Start_ADC_Conversion();
-			udp_demo_send_ADCValue(ADValue);
+			cnt = 0;
 		}
-		else if (TestStatus == STATUS_IS_TCP_CLIENT)
-		{
-			Start_ADC_Conversion();
-			TCP_Client_send_ADCValue(ADValue);
-		}
-			
 	}
+	TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
 }
 
 //定时器3中断服务函数

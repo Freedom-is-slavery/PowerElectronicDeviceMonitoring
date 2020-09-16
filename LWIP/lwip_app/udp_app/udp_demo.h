@@ -18,7 +18,7 @@ void udp_demo_recv(void *arg,struct udp_pcb *upcb,struct pbuf *p,struct ip_addr 
 void udp_demo_senddata(void);
 void udp_demo_connection_close(struct udp_pcb *upcb);
 
-void udp_demo_send_ADCValue(vu16 *value);
+void udp_demo_send_ADCValue(int16_t *value);
 
 #endif
 
