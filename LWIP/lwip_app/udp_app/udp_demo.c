@@ -75,7 +75,7 @@ void udp_demo_test(void)
 	POINT_COLOR = RED;
 	LCD_ShowString(30, 30, 200, 16, 16, "Running LWIP......");
 	LCD_ShowString(30, 50, 200, 16, 16, "UDP Transmission");  
-	LCD_ShowString(30, 90, 200, 16, 16, "KEY_UP:Quit");
+	LCD_ShowString(30, 70, 200, 16, 16, "KEY_UP:Quit");
 
 	tbuf = mymalloc(SRAMIN,200);	//申请内存
 	if(tbuf == NULL) 
@@ -83,11 +83,11 @@ void udp_demo_test(void)
 	
 	POINT_COLOR = GRAY;
 	sprintf((char*)tbuf,"Local IP:%d.%d.%d.%d",lwipdev.ip[0],lwipdev.ip[1],lwipdev.ip[2],lwipdev.ip[3]);
-	LCD_ShowString(30,130,210,16,16,tbuf);  
+	LCD_ShowString(30,110,210,16,16,tbuf);  
 	sprintf((char*)tbuf,"Remote IP:%d.%d.%d.%d",lwipdev.remoteip[0],lwipdev.remoteip[1],lwipdev.remoteip[2],lwipdev.remoteip[3]);
-	LCD_ShowString(30,150,210,16,16,tbuf);  
+	LCD_ShowString(30,130,210,16,16,tbuf);  
 	sprintf((char*)tbuf,"Remote Port:%d",UDP_DEMO_PORT);//客户端端口号
-	LCD_ShowString(30,170,210,16,16,tbuf);
+	LCD_ShowString(30,150,210,16,16,tbuf);
 
 	POINT_COLOR = BLUE;
 	LCD_ShowString(30, 190, 210, 16, 16, "STATUS:Disconnected"); 
@@ -103,9 +103,10 @@ void udp_demo_test(void)
 			if(err==ERR_OK)		//绑定完成
 			{
 				udp_recv(udppcb,udp_demo_recv,NULL);	//注册接收回调函数
-				LCD_ShowString(30, 190, 210, 16, 16, "STATUS:Connected   ");//标记连接上了(UDP是非可靠连接,这里仅仅表示本地UDP已经准备好)
+				LCD_ShowString(30, 170, 210, 16, 16, "STATUS:Connected   ");//标记连接上了(UDP是非可靠连接,这里仅仅表示本地UDP已经准备好)
 				POINT_COLOR = RED;
-				LCD_ShowString(30, 210, lcddev.width-30, lcddev.height-190, 16, "RMS Voltage:");//提示消息		
+				LCD_ShowString(30, 190, 210, 16, 16, "Voltage Measurement:");	
+				LCD_ShowString(30, 210, 210, 16, 16, "-----Amplitude-----RMS-----");
 				POINT_COLOR = BLACK;
 
 				TIM2_Int_Init(100-1, 840-1);	//启动TIM2，开始1ms定时间隔的数据发送
@@ -131,13 +132,13 @@ void udp_demo_test(void)
 		{
 			t = 0;
 			//sprintf((char*)tbuf, "Voltage A: %3d V", (u16)(ADValue[3] * 3.3 / 4096 * 800 / 3));
-			sprintf((char*)tbuf, "Phase A: %4d V", (int16_t)(ADValueTest[3]));
+			sprintf((char*)tbuf, "Phase A: %4d V --- %4d V", 336, 230);
 			LCD_ShowString(30,230,210,16,16,tbuf);
 			//sprintf((char*)tbuf, "Voltage B: %3d V", (u16)(ADValue[4] * 3.3 / 4096 * 800 / 3));
-			sprintf((char*)tbuf, "Phase B: %4d V", (int16_t)(ADValueTest[4]));
+			sprintf((char*)tbuf, "Phase B: %4d V --- %4d V", 325, 238);
 			LCD_ShowString(30,250,210,16,16,tbuf);
 			//sprintf((char*)tbuf, "Voltage C: %3d V", (u16)(ADValue[5] * 3.3 / 4096 * 800 / 3));
-			sprintf((char*)tbuf, "Phase C: %4d V", (int16_t)(ADValueTest[5]));
+			sprintf((char*)tbuf, "Phase C: %4d V --- %4d V", 331, 233);
 			LCD_ShowString(30,270,210,16,16,tbuf);
 
 			LED0 =! LED0;				//LED0标识UDP进程正在运行
